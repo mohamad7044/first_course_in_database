@@ -30,3 +30,59 @@ the films produced before 1950
 who acts in films "gone with the wind"
 how many films has the word "gone" in the title
 
+Data model ( describe data ) have 3 components;
+1. structure of data - conceptual model 
+2. operation on data ( queries, modification )
+3. constraint ( limitation, condition )
+
+data model -> relational model -> data in table-like format
+
+title|year|length|genre
+-----------------------
+GWTH|1939|231|drama
+SW  |1977|124|scifi
+
+the operation on relational/tabel is based on relational aljebra.
+relational aljebra is simple, limited approach to data. useful collection of
+operation ( edit, delete) on data
+
+in relational model -> data is in 2-D table called relation.
+
+identify tuples, attributes, atomic, domain
+
+schema - name of relation, set of attributes
+
+Movies(title,year, length, genre)
+
+each tuple element is atomic
+
+domain - data type
+
+order of tuples is not important
+order of attributs is not important
+
+relation/table often change, schema do not
+
+a set of tuples -> instance
+
+Keys of relation
+
+key ~ a set of one or more attributes that is uniquely identify an instance
+
+Movies(title,year,length,genre)
+      ------,----
+
+can use artificial key like student_id, driver_license, etc
+
+
+SQL si a language to manipulat relation/table. Current standard is SQL 1999. 
+2 aspects of SQL; DDL, DML
+
+In SQL, there are 3 type of relation/table;
+1. stored relation/table e.g Moview
+2. relation based on computation VIEW ( chp.11 )
+3. temp. relation for computation
+
+SQL CREATE TABLE
+
+DATA type
