@@ -86,3 +86,177 @@ In SQL, there are 3 type of relation/table;
 SQL CREATE TABLE
 
 DATA type
+
+CHAR(n), VARCHAR(n), BIT(n), BIT VARYING(n), BOOLEAN, INT, INTEGER
+DATE, FLOAT, REAL, DECIMAL(n,d)
+
+CREATE TABLE Movies (
+title VARCHAR(20),
+...
+);
+
+CREATE TABLE MovieStar (
+name CHAR(30),
+...
+birthday DATE);
+
+Modify
+
+DROP TABLE R;
+ALTER TABLE R ADD phone CHAR(n);
+ALTER TABLE R DROP birthday;
+
+DEFAULT VALUE
+NULL
+
+KEYS - a set of one or more attributes
+primary key
+unique
+
+CREATE TABLE Movies (
+name CHAR(20) PRIMARY KEY,
+....
+);
+
+
+CREATE TABLE Movies (
+name CHAR(20),
+....
+
+PRIMARY KEY(name));
+
+table/relation <-> query/modify -> SQL
+
+4 basic operations
+union, intersection, difference -> relation
+selection -> row
+projection -> attributes/columns
+combine rows -> cross-product, cartesian
+join -> pair tuples from 2 relations
+rename -> change schema
+
+Projection -> new relation that have only some of R attributes
+(pi)
+
+Selction -> a new relation with a subset of R tuples/rows
+
+
+selection of row and column based on conditions
+
+SELECT title, year FROM Movies where year > 1970;
+       ----------                     -----------
+       projection                     selection
+
+
+R
+
+A|B
+---
+1|2
+--
+3|4
+
+
+S
+
+B|C|D
+-----
+2|5|6
+4|7|8
+9|10|11
+
+Given 2 relation R, S
+
+Cartesian product
+
+2x3=6 rows
+
+A|B|B|C|D
+1|2|2|5|6
+1|2|4|7|8
+1|2|9|10|11
+3|4|2|5|6
+3|4|4|7|8
+3|4|9|10|11
+
+---------------------------------------------------
+Natural Join
+
+R bowtie S
+
+pair or tuple that match ( R.B & S.B )
+
+A|B|C|D
+1|2|5|6
+3|4|7|8
+
+
+--------------------------------------------------------
+Theta-join ( join with condition )
+U                          V
+                           
+A|B|C                      B|C|D
+1|2|3                      2|3|4
+6|7|8                      2|3|5
+9|7|8                      7|8|10
+
+
+U x V
+
+
+123234
+123235
+1237810
+678234
+678235
+6787810
+978234
+978235
+9787810
+
+UxV(A<D)
+
+123234
+123235
+1237810
+6787810
+9787810
+
+----------------------------------------------------------
+
+Natural Join
+
+ABC   
+123
+678
+978
+
+BCD
+234
+235
+7810
+
+A NJ B
+
+ABCD
+1234
+1235
+67810
+97810
+
+------------------------------------------------------------
+
+relational aljebra allow us to form any expression of any complexities.
+
+e.g find movies that have length > 100, by studio="fox", and choose only 
+attributes title, year
+
+referential integrity contraint 
+
+Movies(,producer#,...)
+
+MovieExec(...,cert#,...)
+
+the value of producer# must be in the cert#.
+
+
