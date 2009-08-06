@@ -1,0 +1,205 @@
+\documentclass{article}
+
+\title{Relational Aljebra}
+\author{ts2964}
+
+\usepackage{fontspec}
+\defaultfontfeatures{Scale=MatchLowercase}
+\setmainfont[Mapping=tex-text]{Cambria}
+\setsansfont[Mapping=tex-text]{Cambria}
+\setmonofont{Courier New}
+
+\usepackage{xltxtra}
+\usepackage{unicode-math}
+\usepackage{latexsym}
+\usepackage{array}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+Relational aljebra are a set of operation on relations/tables. Recalled that in integer like 1,2,3,4,5, etc., we have operation like $+,-,\times, \div $.
+Similarly, in relations/tables, we have operations; union $\cup$, intersection $\cap$, differences, cartesian products $\times$, join $\Join$. There need to use symbols make it difficult to use ascii-based text editor to write notes.
+
+Given a relation $R$ ( a table with data called $R$), we could use relational aljebra operation on the relation $R$. These operations are union, intersection, differences, cartesian and join.
+
+In  the text, it uses these sysmbols;
+\begin{enumerate}
+\item $\pi$ for rows operation, select certain rows
+\item $\sigma$ for column operation, choose certain attributes
+\end{enumerate}
+
+For instance, see example on page 43-47.
+The relational aljebra can be combined to for arbitrary complex expresson.
+
+\section{Question 2.4.1}
+
+Recalled that, there are 4 relations. The common attributes in all relations/tables are model. We would use ra, mysql/sqlite3 for answers.
+
+(a) Choose \textit{maker} that sell \textit{printer}, but not {pc}. We need \textit{maker}, thus it is a projection. We only need \textit{printer} but not \textit{pc}, thus a selection. The relation we would use is \textit{Product}.
+
+Let $Ri$ where $i=1,2,3,..$ be a temporary relation/table in our computation.
+\begin{eqnarray}
+R1 &:=&  (\pi_{maker})(\sigma_{type=printer})(Product) \\
+R2 &:=&  (\pi_{maker})(\sigma_{type=pc})(Product) \\
+R3 &:=& (\pi_{maker})(R1 - R2) 
+\end{eqnarray}
+
+
+R1 find all maker that sell printer (D,E, H), R2 find all maker that sell pc (A, B, C, D, E). Therefore, those who sell printer, but not pc is (R1-R2) which is (H).
+ 
+SQL: 
+\begin{verbatim}
+CREATE VIEW [U] AS 
+select distinct maker from Product where type="pc";
+
+CREATE VIEW [V] AS 
+select distinct maker from Product where type="printer";
+
+select maker from V where maker not in ( select maker from U);
+\end{verbatim}
+
+(b) what pc model have speed at least 2.5? (1001,1004,1005,1006,1010,1012,1013)
+\begin{eqnarray}
+R1 &:=& (\sigma_{speed} \geq 2.5 )(PC) \\
+R2 &:=& (\pi_{maker})(R1)
+\end{eqnarray}
+
+SQL: SELECT maker from PC where speed >= 2.5
+
+(c) What maker produced laptop with hd atleast 120GB? (A,B,E,G)
+\begin{eqnarray}
+R1 &:=& (\sigma_{hd>120})(LapTop) \\
+R2 &:=& (\pi_{maker})(R1) \\
+R3 &:=& (Product)\Join(R2)
+\end{eqnarray}
+
+SQL;
+\begin{verbatim}
+select maker from Product where model in 
+(select model  from LapTop where hd >= 120)
+
+select Product.maker from Product, LapTop where 
+Product.model=LapTop.model AND LapTop.hd >= 120;
+\end{verbatim}
+
+(d)Find the model and price for all product by maker C. (
+1007, 510)
+\begin{eqnarray}
+R1 &:=&  (\sigma_{maker=C})(Product \Join PC)\\
+R2 &:=&  (\sigma_{maker=C})(Product \Join LapTop)\\
+R3 &:=&  (\sigma_{maker=C})(Product \Join Printer)\\
+R4 &:=&  (\pi_{model,price})(R1) \\
+R5 &:=&  (\pi_{model,price})(R2) \\
+R6 &:=&  (\pi_{model,price})(R3) \\
+R7 &:=& R4 \cup R5 \cup R6 
+\end{eqnarray}
+
+SQL:
+\begin{verbatim}
+select maker,Product.model from Product JOIN 
+   LapTop on Product.model = LapTop.model 
+   where Product.maker="C";
+select maker,Product.model from Product JOIN 
+   PC on Product.model = LapTop.model 
+   where Product.maker="C";
+select maker,Product.model from Product JOIN 
+  Printer on Product.model = LapTop.model 
+  where Product.maker="C";
+
+select model, price from LapTop where model in 
+(select model from Product where maker="C") UNION 
+select model,price from PC where model in 
+(select model from Product where maker = "C" )
+\end{verbatim}
+
+(e) find model of black-and-white printer. (3002, 3005 )
+\begin{eqnarray}
+R1 &:=& (\sigma_{color=0})(Printer) \\
+R2 &:=& (\pi_{model})(R1)
+\end{eqnarray}
+
+SQL:
+\begin{verbatim}
+select model from Printer where color=0;
+\end{verbatim}
+
+(f) find hd sizes that occur in 2 or more PC.(80(2),160(2),250(6))
+
+
+
+SQL:
+\begin{verbatim}
+CREATE VIEW W SELECT hd,count(hd) as hdc from PC group by hd
+select * from W where hdc >= 2
+
+select * from (select hd,count(*) as hdc from PC group by hd ) 
+where hdc >=2
+\end{verbatim}
+
+(g)find pairs of PC that have same speed and RAM.
+(1004,1012)
+\begin{eqnarray}
+R1 &:=& (\sigma_{speed_{a}=speed_{b},ram_{a}=ram_{b},model_{a} < model_{b}})(PC_a \Join PC_b )
+\end{eqnarray}
+
+\begin{verbatim}
+select A.model, B.model,A.speed, A.ram, B.speed,B.ram from 
+PC as A join PC as B on A.speed = B.speed AND A.ram = B.ram 
+AND A.model < B.model
+\end{verbatim}
+
+(h) find makers of atleast 2 different pc or laptop with atleast speed 2.2.
+(B, E )
+
+SQL: 
+\begin{verbatim}
+create view  X as select model,speed from PC where 
+    speed >=2.2 UNION select model,speed 
+    from LapTop where speed >= 2.2
+
+select maker from ( select maker,count(*) as mkc 
+   from X group by maker) 
+   where mkc >=2 
+\end{verbatim}
+
+(k) Find makers with exectly 3 different models PC. ( A,B,D,E)
+
+\begin{verbatim}
+select maker from  ( select maker,count(*) as mkc  
+    from ( Product JOIN  PC on Product.model = PC.model )  
+    group by maker  ) 
+    where mkc =3
+\end{verbatim}
+
+(j) find makers with the highest speed for PC and LapTop. ( maker=B, model=1005,1006).
+
+\begin{verbatim}
+select maker,model from Product where model in  
+     (select model from PC where speed in 
+     (select max(speed) from 
+     ( select model,speed from PC UNION 
+     select model,speed from LapTop )))
+\end{verbatim}
+
+(l) makers with atleast 3 different speeds. ( A (1.42,2.1,2.66), D(2,2.2,2.8), E(1.86,2.8,3.06)) 
+
+\begin{verbatim}
+create view Ri as select Product.maker, PC.model, PC.speed from
+      PC JOIN Product on Product.model = PC.model
+      # note i = 1,2,3
+select R1.maker, R1.speed, R2.speed,R3.speed from R1,R2,R3 
+      where R1.maker=R2.maker and R1.maker = R3.maker and 
+      R1.speed < R2.speed and R1.speed < R3.speed and 
+      R2.speed < R3.speed
+\end{verbatim}
+
+\end{document}
+
+
+% snippet
+\begin{eqnarrray}
+R1 &:=&  \\
+R2 &:=&  \\
+\end{eqnarray}
